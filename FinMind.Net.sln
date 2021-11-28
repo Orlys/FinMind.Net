@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinMind", "src\FinMind\FinMind.csproj", "{2E07BCC3-33B8-4A2D-A5AB-CC19BC35D533}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinMind.Tests", "test\FinMindTests\FinMind.Tests.csproj", "{4A103C1C-0D65-488D-A754-9763A8F44AB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E07BCC3-33B8-4A2D-A5AB-CC19BC35D533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E07BCC3-33B8-4A2D-A5AB-CC19BC35D533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E07BCC3-33B8-4A2D-A5AB-CC19BC35D533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E07BCC3-33B8-4A2D-A5AB-CC19BC35D533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A103C1C-0D65-488D-A754-9763A8F44AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A103C1C-0D65-488D-A754-9763A8F44AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A103C1C-0D65-488D-A754-9763A8F44AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A103C1C-0D65-488D-A754-9763A8F44AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9D361B6A-AE8B-4F86-A65B-EDCEBC0E25B3}
+	EndGlobalSection
+EndGlobal
