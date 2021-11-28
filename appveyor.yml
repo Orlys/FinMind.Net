@@ -1,0 +1,10 @@
+version: 1.0.{build}
+environment:
+  FINMIND_USERID: qWKlICm+pnsC7c11aSDOvQ==
+  FINMIND_PASSWORD: Zmn77E9yB/tO4dfvw5pQME7InBrsZX+oarrC0y4Ol48=
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  use_snupkg_format: true
+  include_nuget_references: true
+  verbosity: minimal
