@@ -45,5 +45,23 @@ namespace FinMind.Net.Tests
 
             Assert.IsTrue(list.Any());
         }
+
+
+        [TestMethod()]
+        
+        public async Task GetUserInfoTest()
+        {
+            var _client = new FinMindClient();
+            var userId = Environment.GetEnvironmentVariable("FINMIND_USERID", EnvironmentVariableTarget.User)!;
+            var password = Environment.GetEnvironmentVariable("FINMIND_PASSWORD", EnvironmentVariableTarget.User)!;
+            await _client.Login(userId, password);
+
+            Assert.IsTrue(_client.IsAuthenticated);
+
+            var userInfo = await _client!.GetUserInfo();
+
+            Assert.IsTrue(userInfo.IsEmailVerified);
+            Assert.AreEqual(userInfo.UserId, userId);
+        }
     }
 }

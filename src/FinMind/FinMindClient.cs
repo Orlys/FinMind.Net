@@ -3,6 +3,8 @@
     using FinMind.Net.Helpers;
     using FinMind.Net.Models;
 
+    using Models;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -30,6 +32,7 @@
     public class FinMindClient
     {
         private const string API_ENDPOINT_V4 = "https://api.finmindtrade.com/api/v4/";
+        private const string API_WEB_ENDPOINT_V2 = "https://api.web.finmindtrade.com/v2/";
 
         private volatile string? _token;
         private readonly HttpClient _client;
@@ -39,8 +42,7 @@
 
         public FinMindClient([NotNull] HttpClient client)
         {
-            this._client = client ?? throw new ArgumentNullException(nameof(client));
-            this._client.BaseAddress = new Uri(API_ENDPOINT_V4);
+            this._client = client ?? throw new ArgumentNullException(nameof(client)); 
 
             this._jsonConverterOptions = new();
             this._jsonConverterOptions.Converters.Add(new DateOnlyJsonConverter());
@@ -52,9 +54,10 @@
 
         }
 
+
         public async Task Login([DisallowNull] string userId, [DisallowNull] string password, CancellationToken cancellationToken = default)
         {
-            var response = await _client.PostAsync("login", new FormUrlEncodedContent(new[] {
+            var response = await _client.PostAsync(API_ENDPOINT_V4 +  "login", new FormUrlEncodedContent(new[] {
                     new KeyValuePair<string, string>("user_id", userId),
                     new KeyValuePair<string, string>("password", password)
                 }), cancellationToken);
@@ -68,6 +71,43 @@
                 : throw new FinMindException(tokenResp.Message!);
         }
 
+        // https://api.web.finmindtrade.com/v2/user_info?token=your_token
+
+        public async Task<UserInfo> GetUserInfo(CancellationToken cancellationToken = default)
+        {
+
+            var uri = API_WEB_ENDPOINT_V2 + "user_info?token=" + this._token;
+            var response = await _client.GetFromJsonAsync<UserInfo>(
+               uri,
+               _jsonConverterOptions,
+               cancellationToken);
+
+            return response!;
+        }
+
+
+
+
+        //public Task GetTaiwanStockPrice([AllowNull] TaiwanStockInfoRequest? request = default, CancellationToken cancellationToken = default)
+        //{
+        //    var param = new Dictionary<string, string?>();
+        //    if (request is not null)
+        //    {
+        //        param["stock_id"] = request.StockId;
+        //        param["start_date"] = request.StartDate?.ToString("yyyy-MM-dd");
+        //        param["end_date"] = request.EndDate?.ToString("yyyy-MM-dd");
+        //    }
+
+        //    var response = await _client.GetFromJsonAsync<FinMindResponse<TaiwanStockInfo>>(
+        //        QueryHelper.ToDataQueryString("TaiwanStockInfo", param!),
+        //        _jsonConverterOptions,
+        //        cancellationToken);
+
+        //    var data = response!.StatusCode == HttpStatusCode.OK
+        //        ? response.Data
+        //        : throw new FinMindException(response.Message!);
+        //    return data;
+        //}
         public async Task<List<TaiwanStockInfo>> GetTaiwanStockInfo([AllowNull] TaiwanStockInfoRequest? request = default, CancellationToken cancellationToken = default)
         {
             var param = new Dictionary<string, string?>();
@@ -79,7 +119,7 @@
             }
 
             var response = await _client.GetFromJsonAsync<FinMindResponse<TaiwanStockInfo>>(
-                QueryHelper.ToDataQueryString("TaiwanStockInfo", param!),
+                API_ENDPOINT_V4 + QueryHelper.ToDataQueryString("TaiwanStockInfo", param!),
                 _jsonConverterOptions,
                 cancellationToken);
 
@@ -88,8 +128,8 @@
                 : throw new FinMindException(response.Message!);
             return data;
         }
-
     }
+
     namespace Helpers
     {
         internal static class QueryHelper
@@ -132,6 +172,76 @@
     }
     namespace Models
     {
+
+
+        #region User Info
+        public class UserInfo
+        {
+            [JsonPropertyName("msg")] 
+            public string? Message { get; set; }
+
+            [JsonPropertyName("status")]
+            public HttpStatusCode StatusCode { get; set; }
+
+            [JsonPropertyName("email_verify")] 
+            public bool IsEmailVerified { get; set; }
+
+            [JsonPropertyName("user_id")] 
+            public string? UserId { get; set; }
+
+            [JsonPropertyName("email")] 
+            public string? Email { get; set; }
+
+            [JsonPropertyName("level")] 
+            public int Level { get; set; }
+
+            [JsonPropertyName("end_date")]
+            public DateOnly? EndDate { get; set; }
+
+            [JsonPropertyName("user_count")]
+            public int ApiRequestedCount { get; set; }
+
+            [JsonPropertyName("api_request_limit")]
+            public int ApiRequestLimit { get; set; }
+
+            [JsonPropertyName("api_request_limit_hour")] 
+            public int ApiRequestLimitHour { get; set; }
+
+            [JsonPropertyName("api_request_limit_day")]
+            public string? ApiRequestLimitDay { get; set; }
+
+            [JsonPropertyName("level_title")] 
+            public string? LevelTitle { get; set; }
+
+            [JsonPropertyName("BackerInfo")]
+            public SubscriptionInfo? BackerInfo { get; set; }
+
+            [JsonPropertyName("SponsorInfo")]
+            public SubscriptionInfo? SponsorInfo { get; set; }
+        }
+
+        public class SubscriptionInfo
+        {
+            [JsonPropertyName("subscription_begin_date")]
+            public DateOnly? SubscriptionBeginDate { get; set; }
+
+            [JsonPropertyName("subscription_expired_date")]
+            public DateOnly? SubscriptionExpiredDate { get; set; }
+
+            [JsonPropertyName("api_request_limit")]
+            public int ApiRequestLimit { get; set; }
+
+            [JsonPropertyName("msg")]
+            public string? Message { get; set; }
+
+            [JsonPropertyName("status_code")]
+            public HttpStatusCode StatusCode { get; set; }
+        }
+
+
+        #endregion
+
+
 
         public class TaiwanStockInfoRequest
         {
