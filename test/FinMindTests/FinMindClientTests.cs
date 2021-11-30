@@ -2,66 +2,76 @@
 namespace FinMind.Net.Tests
 {
     using FinMind.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting; 
-    using System.Threading.Tasks;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     [TestClass()]
-    public class FinMindClientTests
+    public class FinMindTest
     {
-        private static FinMindClient? _client;
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        { 
-            _client = new FinMindClient();
-        } 
-
-        [TestMethod()]
-        public void LoginFailTest()
-        { 
-            var userId = "123";
-            var password = "123" + Guid.NewGuid().ToString();
-
-            Assert.ThrowsExceptionAsync<FinMindException>(() => _client!.Login(userId, password));
-        }
-
-        [TestMethod()]
-        public async Task LoginTest()
+        [TestMethod]
+        public void LoginTest()
         {
-            var _client = new FinMindClient();
             var userId = Environment.GetEnvironmentVariable("FINMIND_USERID", EnvironmentVariableTarget.User)!;
             var password = Environment.GetEnvironmentVariable("FINMIND_PASSWORD", EnvironmentVariableTarget.User)!;
-            await _client.Login(userId, password);
 
-            Assert.IsTrue(_client.IsAuthenticated);
+            var client = new FinMindClient(userId, password);
+            Assert.IsTrue(client.IsAuthenticated);
         }
 
-        [TestMethod()]
-        public async Task GetTaiwanStockInfoTest()
-        {
-            var list = await _client!.GetTaiwanStockInfo();
+        //[TestMethod]
+        //public void LoginFailTest()
+        //{
+        //    var userId = "123";
+        //    var password = Guid.NewGuid().ToString();
 
-            Assert.IsTrue(list.Any());
-        }
+        //    Assert.ThrowsException<FinMindException>(() => new FinMindClient(userId, password));
+        //}
 
-
-        [TestMethod()]
-        
+        [TestMethod]
         public async Task GetUserInfoTest()
         {
-            var _client = new FinMindClient();
             var userId = Environment.GetEnvironmentVariable("FINMIND_USERID", EnvironmentVariableTarget.User)!;
             var password = Environment.GetEnvironmentVariable("FINMIND_PASSWORD", EnvironmentVariableTarget.User)!;
-            await _client.Login(userId, password);
 
-            Assert.IsTrue(_client.IsAuthenticated);
+            var client = new FinMindClient(userId, password);
 
-            var userInfo = await _client!.GetUserInfo();
+            var result = await client.GetUserInfo();
+            Assert.AreEqual(userId, result.UserId);
+        }
 
-            Assert.IsTrue(userInfo.IsEmailVerified);
-            Assert.AreEqual(userInfo.UserId, userId);
+
+        [TestMethod]
+        public async Task GetTaiwanStockInfoTest()
+        {
+            var userId = Environment.GetEnvironmentVariable("FINMIND_USERID", EnvironmentVariableTarget.User)!;
+            var password = Environment.GetEnvironmentVariable("FINMIND_PASSWORD", EnvironmentVariableTarget.User)!;
+
+            var client = new FinMindClient(userId, password);
+
+            var result = await client.GetTaiwanStockInfo();
+            Assert.IsTrue(result.Any());
+        }
+
+
+        [TestMethod]
+        public async Task GetTaiwanStockPriceTickTest()
+        {
+            var userId = Environment.GetEnvironmentVariable("FINMIND_USERID", EnvironmentVariableTarget.User)!;
+            var password = Environment.GetEnvironmentVariable("FINMIND_PASSWORD", EnvironmentVariableTarget.User)!;
+
+            var client = new FinMindClient(userId, password);
+
+            var result = await client.GetTaiwanStockPriceTick(new Models.TaiwanStockPriceTickOptions
+            {
+                StockId = "0050",
+                Date = new DateOnly(2021, 11, 30)
+            });
+
+            Assert.IsTrue(result.Any());
         }
     }
 }
